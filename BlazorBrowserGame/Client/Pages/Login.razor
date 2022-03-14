@@ -1,0 +1,44 @@
+﻿@page "/login"
+@using BlazorBrowserGame.Shared
+@inject HttpClient Http
+@inject AuthenticationStateProvider AuthStateProvider
+@inject ILocalStorageService LocalStorage
+
+if(isAuthenticated)
+{
+    <h3>Logged in as @user.Username</h3>
+}
+else
+{
+    <h3>Login</h3>
+
+    <EditForm Model="user" OnValidSubmit="HandleLogin">
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <div class="form-group">
+            <label for="username">Username</label>
+            <InputText id="username" @bind-Value="user.Username" class="form-control"></InputText>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <InputText id="password" @bind-Value="user.Password" class="form-control" type="password"></InputText>
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
+        <ValidationSummary></ValidationSummary>
+    </EditForm>
+}
+
+@code {
+    bool isAuthenticated = false;
+
+    private UserLogin user = new UserLogin();
+
+    private void HandleLogin()
+    {
+        var result = await Http.PostAsJsonAsync("api/auth", user);
+        var token = await result.Content.ReadAsStringAsync();
+        Console.WriteLine(token);
+        await LocalStorage.SetItemAsync("token", token);
+        await AuthStateProvider.GetAuthenticationStateAsync();
+        isAuthenticated = true;
+    }
+}
