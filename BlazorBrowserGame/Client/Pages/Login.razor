@@ -1,8 +1,5 @@
 ﻿@page "/login"
 @using BlazorBrowserGame.Shared
-@inject HttpClient Http
-@inject AuthenticationStateProvider AuthStateProvider
-@inject ILocalStorageService LocalStorage
 
 if(isAuthenticated)
 {
@@ -34,11 +31,7 @@ else
 
     private void HandleLogin()
     {
-        var result = await Http.PostAsJsonAsync("api/auth", user);
-        var token = await result.Content.ReadAsStringAsync();
-        Console.WriteLine(token);
-        await LocalStorage.SetItemAsync("token", token);
-        await AuthStateProvider.GetAuthenticationStateAsync();
+        Console.WriteLine("");
         isAuthenticated = true;
     }
 }
